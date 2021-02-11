@@ -1,4 +1,4 @@
-#########################parallel.invoke.gpxp#################################
+#########################parallel.invoke.gdat#################################
 
 #'Used to loop through each image, call the gen func in parallel and return
 #'Created By: Benjamin Green;
@@ -10,7 +10,7 @@
 #'
 #'It is meant to be run through the RUN function
 #'
-#'
+#' @param a.type is the type of analysis; cell, pixel, or tissue
 #' @param Concentration a numeric vector of concentrations used in the titration
 #' @param x a unique identifier for the slide to be analyzed
 #' @param y the numeric of which index from the concentration vector to use
@@ -31,42 +31,43 @@
 #' @param threshold.logical whether or not to run a threshold approach analysis
 #' @param step.value the number of tiles to divide the data into for decile 
 #' approach
+#' @param compartment cell compartment for cell analysis
+#' @param phenotype.logical for cell analysis whether the data was phenotyped 
+#' or not
+#' @param pheno.antibody the name of the positive phenotype in cell analysis 
 #' @param cl cluster object
 #' @return
 #' @export
 #'
 #'
-parallel.invoke.gpxp <- function (
-  Concentration, x, y, Image.IDs, Antibody_Opal,
+parallel.invoke.gdat<- function (
+  a.type, Concentration, x, y, Image.IDs, Antibody_Opal,
   titration.type.name, Thresholds, paths,
   connected.pixels, flowout, Opal1,
-  decile.logical, threshold.logical, step.value, cl){
+  decile.logical, threshold.logical, step.value,
+  compartment, phenotype.logical, pheno.antibody, cl){
   #
   # define the environment for the cluster
   #
   my_env <- environment()
   parent.env(my_env) <- .GlobalEnv
   #
-  # for each image gather the stats and return the images
-  # to reduce RAM usage the code does this one image at a time
-  # in addition parallel computing was implemented
-  # to speed this up. Though the actual RAM usage is quite low
-  # if I only carry the part of the image that is needed...
-  #
   parallel::clusterExport(
     cl=cl, varlist=c("Concentration", "x", "y", "Antibody_Opal",
                      "titration.type.name","Thresholds","paths",
                      "connected.pixels","flowout","Opal1",
-                     "decile.logical", "threshold.logical", "step.value"),
+                     "decile.logical", "threshold.logical", "step.value",
+                     "compartment","phenotype.logical","pheno.antibody"),
     envir=my_env)
   #
-  ###### need to add a try catch, but also need to determine what happens
-  ###### when I throw an error instead of the envir
-    small.tables.byimage<- parallel::parLapply(
-      cl,Image.IDs[[x]][[y]],function(z) mIFTO::generate.pxp.image.data(
-        Concentration, x, y, z, Antibody_Opal,
-        titration.type.name, Thresholds, paths,
-        connected.pixels, flowout, Opal1,
-        decile.logical, threshold.logical, step.value))
+  small.tables.byimage<- parallel::parLapply(
+    cl,Image.IDs[[x]][[y]],function(z) mIFTO::generate.image.data(
+      Concentration, x, y, z, Antibody_Opal,
+      titration.type.name, Thresholds, paths,
+      connected.pixels, flowout, Opal1,
+      decile.logical, threshold.logical, step.value,
+      compartement, phenotype.logical, pheno.antibody
+    )
+  )
   #
 }

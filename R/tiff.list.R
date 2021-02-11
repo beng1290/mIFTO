@@ -1,14 +1,13 @@
-###############################Pixel functions###########################
+###############################tiff.list###########################
 
-#'Used by analysis functions to read in 8-layer and 10-layer
-#'component_tiff images
+#'Used by analysis functions to read component_tiff images
 #'
 #'tiff.list;
 #'Created By: Benjamin Green;
 #'Last Edited 11/12/2018
 #'
 #'This script is designed to read in the
-#'component_tiff image or images exported from inForm (R) CellAnaylsis
+#'component_tiff image exported from inForm (R) CellAnaylsis
 #'The function returns a data.frame of n columns, each column in the
 #'data.frame designates a different layer of the image designated
 #'here as DAPI; Flours; AF; however the column/names order may change
@@ -16,7 +15,9 @@
 #'
 #' @param wd is the working directory
 #' @param pattern.in is the pattern used by R to determine which image or images to read in
-#' @return tiff.list is an 8 column data.frame where each column holds the pixel intensities for a single image layer
+#' @return is a list of two; tiff.list is a column data.frame where each column
+#' holds the pixel intensities for a single image layer, labeled by the inForm
+#' image layer names, and err.val a value indicating an error (1) or not (0)
 #' @export
 #'
 tiff.list <- function(wd, pattern.in) {
@@ -24,7 +25,7 @@ tiff.list <- function(wd, pattern.in) {
   # get all images with similar image names
   #
   err.val <- 0
-  image_names <- list.files(
+  image_name <- list.files(
     wd,
     pattern = paste0(pattern.in, '_component_data.tif'),
     full.names = T,
@@ -32,7 +33,7 @@ tiff.list <- function(wd, pattern.in) {
     recursive = F,
     include.dirs = F
   )
-  if (length(image_names) > 1){
+  if (length(image_name) != 1){
     err.val <- 1
     return(list(err.val = err.val))
   }
@@ -40,7 +41,7 @@ tiff.list <- function(wd, pattern.in) {
   #
   # get the names of the layers for the protocol
   #
-  a <- ijtiff::read_tags(image_names,'all' )
+  a <- ijtiff::read_tags(image_name,'all' )
   results.match <- matrix(length(a), 1)
   #
   for (i.1 in 1:length(a)){
@@ -60,8 +61,8 @@ tiff.list <- function(wd, pattern.in) {
   #
   # read each image in separately
   #
-  for (count2 in 1:length(image_names)) {
-    v <- tiff::readTIFF(image_names[count2],native = F,all = T,as.is = F)
+  for (count2 in 1:length(image_name)) {
+    v <- tiff::readTIFF(image_name[count2],native = F,all = T,as.is = F)
     if (!(length(v)-1) == length(types)){
       return(err.val = 15)
     }

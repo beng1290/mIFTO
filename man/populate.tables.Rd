@@ -8,6 +8,7 @@ Created By: Benjamin Green;
 Last Edited 05/29/2020}
 \usage{
 populate.tables(
+  a.type,
   Slide_Descript,
   Concentration,
   Antibody_Opal,
@@ -17,19 +18,26 @@ populate.tables(
   Protocol,
   paths,
   titration.type.name,
-  connected.pixels,
   decile.logical,
-  threshold.logical,
   step.value,
+  connected.pixels,
+  threshold.logical,
+  compartment,
+  phenotype.logical,
+  pheno.antibody,
   pb.count,
   pb.Object
 )
 }
 \arguments{
+\item{a.type}{is the type of analysis; cell, pixel, or tissue}
+
+\item{Slide_Descript}{a unique identifier for each slide to be analyzed}
+
 \item{Concentration}{a numeric vector of concentrations used in the titration}
 
-\item{Antibody_Opal}{the paired string for an antibody opal pair, designated
-as "AB (Opal NNN)"}
+\item{Antibody_Opal}{the paired string for an antibody fluor pair, designated
+as "AB ( NNN)"}
 
 \item{Thresholds}{a list of thresholds used for each concentration and slide}
 
@@ -45,21 +53,26 @@ as "AB (Opal NNN)"}
 \item{titration.type.name}{the titration type for a given dilution set
 (Primary or TSA)}
 
-\item{connected.pixels}{the number of pixels that a pixel must be connected
-to for positivity measures}
-
 \item{decile.logical}{whether or not to run a decile approach analysis}
-
-\item{threshold.logical}{whether or not to run a threshold approach analysis}
 
 \item{step.value}{the number of tiles to divide the data into for decile 
 approach}
 
+\item{connected.pixels}{the number of pixels that a pixel must be connected
+to for positivity measures}
+
+\item{threshold.logical}{whether or not to run a threshold approach analysis}
+
+\item{compartment}{cell compartment for cell analysis}
+
+\item{phenotype.logical}{for cell analysis whether the data was phenotyped 
+or not}
+
+\item{pheno.antibody}{the name of the positive phenotype in cell analysis}
+
 \item{pb.count}{current count for progress bar}
 
 \item{pb.Object}{progress bar object}
-
-\item{Slide_Desctipt}{a unique identifier for each slide to be analyzed}
 }
 \value{
 

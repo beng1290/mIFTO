@@ -1,16 +1,16 @@
-#########################generate.pxp.image.data################################
+#########################generate.image.data################################
 #
-#'Used to create the pixel-by-pixel graph data and return a table;
+#'Used to create the graph data and return a table;
 #'Created By: Benjamin Green;
 #'Last Edited 08/11/2020
 #'
-#'This function is desgined to do analysis for IF titration series
-#'in Pixel by Pixel data provding output for each IMAGE individually
+#'This function is designed to do analysis for IF titration series
+#'in data providing output for each IMAGE individually
 #'grouped by Concentration
 #'
 #'It is meant to be run through the RUN function
 #'
-#'
+#' @param a.type is the type of analysis; cell, pixel, or tissue
 #' @param Concentration a numeric vector of concentrations used in the titration
 #' @param x a unique identifier for the slide to be analyzed
 #' @param y the numeric of which index from the concentration vector to use
@@ -38,7 +38,7 @@
 #' @export
 #'
 generate.image.data <- function(
-  Concentration, x, y, q, Antibody_Opal,
+  a.type, Concentration, x, y, q, Antibody_Opal,
   titration.type.name, Thresholds, paths,
   connected.pixels, flowout, Opal1,
   decile.logical, threshold.logical, step.value,
@@ -55,7 +55,12 @@ generate.image.data <- function(
   # read that image in
   #
   data.in <- tryCatch({
-    data.in <- mIFTO::tiff.list(paths[[y]], pattern.in = str)
+    if (a.type == 'cells') {
+      data.in <- mIFTO::csv.list(wd, pattern.in = str,
+                                 compartment, phenotype.logical)
+    } else {
+      data.in <- mIFTO::tiff.list(paths[[y]], pattern.in = str)
+    }
     err.val <- data.in$err.val
     if (!err.val == 0){
       return(-1)
@@ -88,9 +93,9 @@ generate.image.data <- function(
     }
     names(data.in.write) <- names(data.in)
     str = paste0(
-      wd,'/Results.pixels/data/raw/flow_like_tables/',Antibody_Opal,'_',x,'_1to',
+      wd,'/Results.',a.type,'/data/raw/flow_like_tables/',
+      Antibody_Opal,'_',x,'_1to',
       Concentration[y],'_[',q,'].csv')
-
     data.table::fwrite(data.in.write, file=str,sep=',')
   }
   #
@@ -102,8 +107,13 @@ generate.image.data <- function(
   #
   if(decile.logical){
     #
-    decile.positivity.data <- mIFTO::decile.define.image.positivity(
-      data.in, step.value)
+    if (a.type == 'pixels'){
+      decile.positivity.data <- mIFTO::decile.define.image.positivity(
+        data.in, step.value)
+    } else if (a.type == 'cells'){
+      decile.positivity.data <- mIFTO::decile.define.cell.positivity(
+        data.in, step.value)
+    }
     small.tables<-c(small.tables,
                     'decile.SN.Ratio' = list(mIFTO::sn.ratio.calculations(
                       decile.positivity.data,Concentration[y],x,q)),
@@ -113,16 +123,20 @@ generate.image.data <- function(
     )
   }
   #
-  if(threshold.logical){
+  if(threshold.logical || phenotype.logical){
     #
     # get the positvity data
     #
-    if ((length(connected.pixels) == 1) & (grepl('NA', connected.pixels))){
-      positivity.data <- mIFTO::define.image.positivity(
-        data.in,Thresholds[[x]][y],connected.pixels)
-    } else {
-      positivity.data <- mIFTO::define.image.positivity(
-        data.in,Thresholds[[x]][y],connected.pixels[[x]][y])
+    if (a.type == 'pixels'){
+      if ((length(connected.pixels) == 1) & (grepl('NA', connected.pixels))){
+        positivity.data <- mIFTO::define.image.positivity(
+          data.in,Thresholds[[x]][y],connected.pixels)
+      } else {
+        positivity.data <- mIFTO::define.image.positivity(
+          data.in,Thresholds[[x]][y],connected.pixels[[x]][y])
+      }
+    } else if (a.type == 'cells'){
+      positivity.data <- mIFTO::define.cell.positivity(data.in)
     }
     #
     # do the calculations for each type of graph and store

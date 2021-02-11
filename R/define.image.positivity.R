@@ -26,9 +26,12 @@ define.image.positivity <- function(
   mask[which(mask > 0)] <- 1
   #
   if (!connected.pixels.now == 'NA'){
-    l<-EBImage::bwlabel(mask)
-    m<-which(EBImage::computeFeatures.shape(l,v)[,'s.area']<connected.pixels.now)
-    pos.mask<-EBImage::rmObjects(l,m)
+    pos.mask <-EBImage::bwlabel(mask)
+    z = which(as.integer(pos.mask) > 0L)
+    f = split(z,  pos.mask[z]) 
+    p <- sapply(f, length)
+    m <- which(p < 20)
+    pos.mask[which(pos.mask %in% m)] <- 0
     pos.mask[which(pos.mask>0)]<-1
   } else {
     pos.mask <- mask

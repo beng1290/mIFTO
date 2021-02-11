@@ -70,7 +70,7 @@ ui.map <- function (){
               shiny::actionLink(
                 "pdf", "Help", onclick =
                   paste0("window.open('https://github.com",
-                         "/beng1290/mIFTO/blob/master/README.md')"
+                         "/AstropathJHU/mIFTO/blob/master/README.md')"
                          )
                 ,style="color: #f0f6ee;", align = 'right'
               )
@@ -295,10 +295,10 @@ ui.map <- function (){
                       'Is the antibody of interest sparse (e.g. FoxP3)?'
                     ),
                     choiceValues = list(
-                      'Phenotype',
-                      'Folders',
-                      'Named',
-                      'AB_Sparse'
+                      'phenotyped',
+                      'folders.cells',
+                      'named',
+                      'AB_sparse'
                     ),
                     selected = 'Folders',
                     inline = TRUE),
@@ -311,7 +311,7 @@ ui.map <- function (){
                   4, align = "center", offset = 1,
                   shiny::fluidRow(
                     shiny::textInput(
-                      "Pheno.Antibody",
+                      "pheno.antibody",
                       shiny::div(
                         shiny::br(),"What was the name used for the
                         positive phenotype?", shiny::br(),
@@ -326,7 +326,7 @@ ui.map <- function (){
                   #
                   shiny::fluidRow(
                     shiny::selectInput(
-                      "Compartment",
+                      "compartment",
                       shiny::div(class = "textB",
                                  "Cell Compartment for Analysis",
                                  shiny::br(),style = fm.object$commontextstyle
@@ -416,12 +416,12 @@ ui.map <- function (){
                       'Export csv files of flow-like data (column vec format)?'
                     ),
                     choiceValues = list(
-                      'Folders.Pixels',
-                      'ihc.Pixels',
+                      'folders.pixels',
+                      'ihc.pixels',
                       'nConsistent',
-                      'flowout.Pixels'
+                      'flowout.pixels'
                     ),
-                    selected = 'Folders.Pixels',
+                    selected = 'folders.pixels',
                     inline = TRUE),
                   style = fm.object$commoninputstylelonglist
                 ),

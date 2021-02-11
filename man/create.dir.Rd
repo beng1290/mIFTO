@@ -12,7 +12,7 @@ create.dir(wd, type, flowout)
 \arguments{
 \item{wd}{the main data root directory}
 
-\item{type}{the second half of the results name (either pixels or cell)}
+\item{type}{the second half of the results name (either pixels or cells)}
 
 \item{flowout}{logical for whether or not flow like results will be produced}
 }

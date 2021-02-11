@@ -31,7 +31,8 @@ pixelbypixel <- function(out,pb.Object) {
   #
   # check input parameters and allocate some for eaiser indexing
   #
-  outchecked <- mIFTO::check.vars(out)
+  a.type = 'pixels'
+  outchecked <- mIFTO::check.vars(out, a.type)
   err.val <- outchecked$err.val
   if (err.val != 0) {
     return(err.val)
@@ -42,11 +43,10 @@ pixelbypixel <- function(out,pb.Object) {
   Opal1 <- outchecked$Opal1
   Antibody_Opal <- outchecked$Antibody_Opal
   Concentration <- outchecked$Concentration
-  Thresholds <- outchecked$Thresholds
   num.of.tiles <- outchecked$num.of.tiles
   flowout <- outchecked$flowout
   ihc.logical <- outchecked$ihc.logical
-  folders.px <- outchecked$folders.px
+  m.folders <- outchecked$m.folders
   if (ihc.logical){
     ihc.connected.pixels <- outchecked$ihc.connected.pixels
     ihc.Thresholds <- outchecked$ihc.Thresholds
@@ -55,6 +55,7 @@ pixelbypixel <- function(out,pb.Object) {
   paths <- outchecked$paths
   titration.type.name <- outchecked$titration.type.name
   connected.pixels <- outchecked$connected.pixels
+  Thresholds <- outchecked$Thresholds
   decile.logical <- outchecked$decile.logical
   threshold.logical <- outchecked$threshold.logical
   step.value <- 10
@@ -65,7 +66,7 @@ pixelbypixel <- function(out,pb.Object) {
   #
   pb.count = 1; mIFTO::doupdate.pgbar(
     pb.count, pb.Object, 'Generating Folders')
-  v <- mIFTO::create.dir(wd,'pixels', flowout)
+  v <- mIFTO::create.dir(wd,a.type, flowout)
   rm(v)
   #
   ###############################Reads in data##########################
@@ -112,7 +113,7 @@ pixelbypixel <- function(out,pb.Object) {
     mIFTO::map.and.plot.threshold.graphs(
       wd, Antibody_Opal, Antibody, Slide_Descript, Concentration, Tables,
       Thresholds, connected.pixels, ihc.logical, ihc.Thresholds,
-      ihc.connected.pixels, folders.px, theme1, con_type, colors,
+      ihc.connected.pixels, m.folders, theme1, con_type, colors,
       Antibody_Opal.snratio, Antibody_Opal.ttest, pb.Object)
   }
   #

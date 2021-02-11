@@ -10,6 +10,7 @@
 #'list later. This function prepopulates both of these tables
 #'with separate subvectors for each concentration - slide pair
 #'
+#' @param a.type is the type of analysis; cell, pixel, or tissue
 #' @param Slide_Desctipt a unique identifier for each slide to be analyzed
 #' @param Concentration a numeric vector of concentrations used in the titration
 #' @param titration.type.name the titration type for a given dilution set (Primary or TSA)
@@ -18,12 +19,14 @@
 #' @param Protocol the protocol type (7color or 9color)
 #' @param decile.logical whether or not to run a decile approach analysis
 #' @param threshold.logical whether or not to run a threshold approach analysis
+#' @param phenotype.logical for cell analysis whether the data was phenotyped 
+#' or not
 #' @return exports the Tables list and the Image.IDs sublists
 #' @export
 #'
 preallocate.tables <- function(
-  Slide_Descript,Concentration, titration.type.name, table.names, paths,
-  Protocol, decile.logical, threshold.logical){
+  a.type, Slide_Descript,Concentration, titration.type.name, table.names, paths,
+  Protocol, decile.logical, threshold.logical, phenotype.logical){
   err.val <- 0
   #
   # preallocate tables with 4 sub tables for each type of graph/
@@ -104,14 +107,21 @@ preallocate.tables <- function(
     Protocol.layers <- 11
   }
   #
+  if (a.type == 'pixels') { 
+    exten = 'component_data.tif'
+  } else if (a.type == 'cells') {
+    exten = 'cell_seg_data.txt'
+  }
+  #
   for(x in Slide_Descript){
     names(Image.IDs[[x]])<- Concentration
     for(y in 1:length(Concentration)){
       #
       # regular expression to grab this concentration and slide descript pair
       #
+     
       str =  paste0('.*', x, '.*',titration.type.name,
-                    '_1to', Concentration[y], '[^0].*_component_data.tif')
+                    '_1to', Concentration[y], '[^0].*_', exten)
       #
       cImage.IDs <-  list.files(
         paths[[y]],pattern = str, ignore.case = T, recursive = F,
@@ -124,7 +134,8 @@ preallocate.tables <- function(
       if (!length(a) == 0){
         #_M file found
         n <- shiny::showNotification(
-          paste0('M# duplicate file found: ', cImage.IDs[a]),
+          paste0('M# duplicate file found: Slide ', x, ' Concentration 1to',
+                 Concentration[y]),
           type = 'warning')
         n <- shiny::showNotification(
           paste(
@@ -143,36 +154,36 @@ preallocate.tables <- function(
           title =  paste0('Search failed for ', x, ' ', titration.type.name,
                           '_1to', Concentration[y]),
           text = paste0(
-            'Please check slide names and that component data tiffs for ',
+            'Please check slide names and that ',exten,' files for ',
             x, ' 1to',Concentration[[y]],' exist'),
           type = 'error',
           showConfirmButton = TRUE
         )
-        err.val <- 13
+        err.val <- 5
         return(list(err.val = err.val))
       }
       #
-      for (i.1 in 1:length(cImage.IDs)){
-        a <- ijtiff::read_tags(paste0(paths[y],'\\',cImage.IDs[[i.1]]), 'all' )
-        if (!length(a) == Protocol.layers){
-          modal_out <- shinyalert::shinyalert(
-            title =  paste0(
-              'Wrong number of layers in image for unmixing protocol: ',
-              Protocol),
-            text = paste0(
-              'Please check that slides were unmixed properly for ',
-              x, ' ', titration.type.name,'_1to', Concentration[y],
-              '; Image name: ',
-              cImage.IDs[[i.1]]),
-            type = 'error',
-            showConfirmButton = TRUE
-          )
-          err.val <- 13
-          return(list(err.val = err.val))
+      if (a.type == 'pixels'){
+        for (i.1 in 1:length(cImage.IDs)){
+          a <- ijtiff::read_tags(paste0(paths[y],'\\',cImage.IDs[[i.1]]), 'all' )
+          if (!length(a) == Protocol.layers){
+            modal_out <- shinyalert::shinyalert(
+              title =  paste0(
+                'Wrong number of layers in image for unmixing protocol: ',
+                Protocol),
+              text = paste0(
+                'Please check that slides were unmixed properly for ',
+                x, ' ', titration.type.name,'_1to', Concentration[y],
+                '; Image name: ',
+                cImage.IDs[[i.1]]),
+              type = 'error',
+              showConfirmButton = TRUE
+            )
+            err.val <- 5
+            return(list(err.val = err.val))
+          }
         }
       }
-
-
       Image.IDs[[x]][[y]]<-gsub('.*\\[|\\].*','',cImage.IDs)
       #
       Image.ID.fullstrings <- c(Image.ID.fullstrings,cImage.IDs)
@@ -201,7 +212,7 @@ preallocate.tables <- function(
     table.names.wholeslide.1 <- NULL
   }
   #
-  if (threshold.logical){
+  if (threshold.logical || phenotype.logical) {
     Tables.wholeslide$BoxPlots_90 <- Tables.wholeslide$BoxPlots
     Tables.wholeslide$BoxPlots_95 <- Tables.wholeslide$BoxPlots
     Tables.wholeslide$BoxPlots_98 <- Tables.wholeslide$BoxPlots

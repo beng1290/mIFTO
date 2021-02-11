@@ -2,8 +2,7 @@
 % Please edit documentation in R/tiff.list.R
 \name{tiff.list}
 \alias{tiff.list}
-\title{Used by analysis functions to read in 8-layer and 10-layer
-component_tiff images}
+\title{Used by analysis functions to read component_tiff images}
 \usage{
 tiff.list(wd, pattern.in)
 }
@@ -13,7 +12,9 @@ tiff.list(wd, pattern.in)
 \item{pattern.in}{is the pattern used by R to determine which image or images to read in}
 }
 \value{
-tiff.list is an 8 column data.frame where each column holds the pixel intensities for a single image layer
+is a list of two; tiff.list is a column data.frame where each column
+holds the pixel intensities for a single image layer, labeled by the inForm
+image layer names, and err.val a value indicating an error (1) or not (0)
 }
 \description{
 tiff.list;
@@ -22,7 +23,7 @@ Last Edited 11/12/2018
 }
 \details{
 This script is designed to read in the
-component_tiff image or images exported from inForm (R) CellAnaylsis
+component_tiff image exported from inForm (R) CellAnaylsis
 The function returns a data.frame of n columns, each column in the
 data.frame designates a different layer of the image designated
 here as DAPI; Flours; AF; however the column/names order may change

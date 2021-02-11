@@ -35,13 +35,13 @@ sn.ratio.theme <- function(tbl, Concentration, titl, xtitl, ytitl, Max, theme1,
   #
   if (Max < 100){
     Max = round(Max, -1) + 5
-    ybre <- seq(0,100,5)
+    ybre <- seq(0,Max,5)
   } else if (Max >= 100 & Max < 500) {
     Max = round(Max, -2) + 100
     ybre <- seq(0, Max, 50)
   } else {
     Max = round(Max, -2) + 100
-    ybre <- seq(0, Max + 100, 100)
+    ybre <- seq(0, Max, 100)
     
   }
   #

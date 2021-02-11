@@ -21,14 +21,19 @@
 #'  for images, positivity measures given thresholds
 #' @export
 #'
-CellbyCell.BySlide<-function(out,pb){
-  ##################stores user input as new parameters###############
-  #parameters are explained in additional documentation
-  i=0;Sys.sleep(0.1)
-  setWinProgressBar(
-    pb, i, title=paste0( i,"% Complete"),label = paste0('Browse For Folder'))
-
-  wd<-choose.dir(caption='Select the folder the data is contained in')
+CellbyCell.BySlide<-function(out,pb.Object){
+  ##############################input parameters########################
+  #
+  pb.count = 0; mIFTO::doupdate.pgbar(
+    pb.count, pb.Object, 'Browse For Folder')
+  #
+  # check input parameters and allocate some for eaiser indexing
+  #
+  outchecked <- mIFTO::check.vars(out)
+  err.val <- outchecked$err.val
+  if (err.val != 0) {
+    return(err.val)
+  }
 
   Slide_Descript<- unlist(strsplit(out$Slide_Descript,split=','))
   Protocol <- out$protocol.type
@@ -39,19 +44,23 @@ CellbyCell.BySlide<-function(out,pb){
   Antibody<-out$Antibody
   Opal1<-paste0('Opal ',out$Opal1)
   Antibody_Opal<-paste0(Antibody,' (',Opal1,')')
-  Compartment<-out$Compartment
+ 
   Concentration<-as.numeric(unlist(strsplit(out$Concentration,split=',')))
-  Phenotype<-as.logical(out$Phenotype)
-  Named<-as.logical(out$Named)
+  
   IHC<-FALSE
 
   ABB<-out$Pheno.Antibody
   Naming.convention<-out$Naming.convention
   titration.type<-out$titration.type
-  AB_Sparse<-as.logical(out$AB_Sparse)
+  
   Folders<-as.logical(out$Folders)
   Protocol <- out$protocol.type
 
+  Phenotype<-as.logical(out$Phenotype)
+  Named<-as.logical(out$Named)
+  AB_Sparse<-as.logical(out$AB_Sparse)
+  Compartment<-out$Compartment
+  
   if(Naming.convention==T){
     if(titration.type=='Primary'){
       titration.type.name<-Antibody

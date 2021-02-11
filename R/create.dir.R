@@ -9,7 +9,7 @@
 #'Results.cell recursively checking that the full file tree will be created
 #'
 #' @param wd the main data root directory
-#' @param type the second half of the results name (either pixels or cell)
+#' @param type the second half of the results name (either pixels or cells)
 #' @param flowout logical for whether or not flow like results will be produced
 #' @export
 #'

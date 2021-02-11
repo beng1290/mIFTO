@@ -11,11 +11,11 @@
 #'
 #'It is meant to be run through the RUN function
 #'
-#'
-#' @param Slide_Desctipt a unique identifier for each slide to be analyzed
+#' @param a.type is the type of analysis; cell, pixel, or tissue
+#' @param Slide_Descript a unique identifier for each slide to be analyzed
 #' @param Concentration a numeric vector of concentrations used in the titration
-#' @param Antibody_Opal the paired string for an antibody opal pair, designated
-#'  as "AB (Opal NNN)"
+#' @param Antibody_Opal the paired string for an antibody fluor pair, designated
+#'  as "AB ( NNN)"
 #' @param Thresholds a list of thresholds used for each concentration and slide
 #' @param Opal1 the opal value of interest
 #' @param flowout logical for whether or not flow like results will be produced
@@ -24,21 +24,26 @@
 #' @param paths the data paths, one data path for each concentration
 #' @param titration.type.name the titration type for a given dilution set
 #' (Primary or TSA)
-#' @param connected.pixels the number of pixels that a pixel must be connected
-#' to for positivity measures
 #' @param decile.logical whether or not to run a decile approach analysis
-#' @param threshold.logical whether or not to run a threshold approach analysis
 #' @param step.value the number of tiles to divide the data into for decile 
 #' approach
+#' @param connected.pixels the number of pixels that a pixel must be connected
+#' to for positivity measures
+#' @param threshold.logical whether or not to run a threshold approach analysis
+#' @param compartment cell compartment for cell analysis
+#' @param phenotype.logical for cell analysis whether the data was phenotyped 
+#' or not
+#' @param pheno.antibody the name of the positive phenotype in cell analysis 
 #' @param pb.count current count for progress bar
 #' @param pb.Object progress bar object
 #' @return
 #' @export
 #'
 populate.tables <- function(
-  Slide_Descript, Concentration, Antibody_Opal, Thresholds, Opal1,
-  flowout, Protocol, paths, titration.type.name, connected.pixels,
-  decile.logical, threshold.logical, step.value, pb.count, pb.Object){
+  a.type, Slide_Descript, Concentration, Antibody_Opal, Thresholds, Opal1,
+  flowout, Protocol, paths, titration.type.name, decile.logical, step.value, 
+  connected.pixels, threshold.logical,compartment, phenotype.logical,
+  pheno.antibody, pb.count, pb.Object){
   #
   #############pre-allocating tables to store results###################
   #
@@ -49,8 +54,9 @@ populate.tables <- function(
   table.names.wholeslide<-c('SN.Ratio','T.Tests','Histograms','BoxPlots')
   #
   tables.out <- mIFTO::preallocate.tables(
-    Slide_Descript, Concentration, titration.type.name,
-    table.names.wholeslide, paths, Protocol,decile.logical, threshold.logical)
+    a.type, Slide_Descript, Concentration, titration.type.name,
+    table.names.wholeslide, paths, Protocol, decile.logical, threshold.logical,
+    phenotype.logical)
   err.val <- tables.out$err.val
   if (err.val != 0) {
     return(list(err.val = err.val))
@@ -74,7 +80,13 @@ populate.tables <- function(
   #
   #############reading images in and computing stats for all pairs##############
   #
-  mIFTO::doupdate.pgbar(pb.count, pb.Object, 'Reading in Images')
+  if (a.type == 'cells'){
+    mIFTO::doupdate.pgbar(pb.count, pb.Object, 'Reading in File(s)')
+    f.type = 'Text files'
+  } else {
+    mIFTO::doupdate.pgbar(pb.count, pb.Object, 'Reading in Image(s)')
+    f.type = 'Tiffs'
+  }
   Sys.sleep(0.5)
   #
   for(x in Slide_Descript){
@@ -85,7 +97,7 @@ populate.tables <- function(
       str1 = paste0("Processing ", x, ' 1:',Concentration[[y]])
       pb.count <- pb.count + pb.step; pb.count2 <- round(pb.count, digits = 0);
       mIFTO::doupdate.pgbar(pb.count2, pb.Object, paste0(
-        str1,' - Reading Tiffs and Generating Image Statistics - ',
+        str1,' - Reading ',f.type,' and Generating By-Image Statistics - ',
         length(Image.IDs[[x]][[y]])))
       #
       #############read each image and do by image stats###################
@@ -99,11 +111,12 @@ populate.tables <- function(
         parallel::clusterEvalQ(cl, library(mIFTO));
         #
         small.tables.byimage <- tryCatch({
-          mIFTO::parallel.invoke.gpxp(
-            Concentration, x, y, Image.IDs, Antibody_Opal,
+          mIFTO::parallel.invoke.gdat(
+            a.type,  Concentration, x, y, Image.IDs, Antibody_Opal,
             titration.type.name, Thresholds, paths,
             connected.pixels, flowout, Opal1,
-            decile.logical, threshold.logical, step.value, cl
+            decile.logical, threshold.logical, step.value,
+            compartment, phenotype.logical, pheno.antibody, cl
           )
         }, warning = function(cond) {
           modal_out <- shinyalert::shinyalert(

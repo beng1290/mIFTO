@@ -7,6 +7,7 @@ Created By: Benjamin Green;
 Last Edited 09/25/2019}
 \usage{
 preallocate.tables(
+  a.type,
   Slide_Descript,
   Concentration,
   titration.type.name,
@@ -14,10 +15,13 @@ preallocate.tables(
   paths,
   Protocol,
   decile.logical,
-  threshold.logical
+  threshold.logical,
+  phenotype.logical
 )
 }
 \arguments{
+\item{a.type}{is the type of analysis; cell, pixel, or tissue}
+
 \item{Concentration}{a numeric vector of concentrations used in the titration}
 
 \item{titration.type.name}{the titration type for a given dilution set (Primary or TSA)}
@@ -31,6 +35,9 @@ preallocate.tables(
 \item{decile.logical}{whether or not to run a decile approach analysis}
 
 \item{threshold.logical}{whether or not to run a threshold approach analysis}
+
+\item{phenotype.logical}{for cell analysis whether the data was phenotyped 
+or not}
 
 \item{Slide_Desctipt}{a unique identifier for each slide to be analyzed}
 }

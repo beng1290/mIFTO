@@ -4,7 +4,7 @@
 \alias{CellbyCell.BySlide}
 \title{Used by RUN.BySlide to do Cell by Cell Analysis on images for IF titrations}
 \usage{
-CellbyCell.BySlide(out, pb)
+CellbyCell.BySlide(out, pb.Object)
 }
 \arguments{
 \item{out}{is the list of vairables given by the GUI function}
