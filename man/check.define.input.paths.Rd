@@ -6,11 +6,7 @@
 Created By: Benjamin Green
 Last Edited 02/09/2021}
 \usage{
-check.define.input.paths(
-  out.chkbx,
-  out.gen,
-  wd = choose.dir(caption = "Select the folder the data is contained in")
-)
+check.define.input.paths(out.chkbx, out.gen, wd)
 }
 \arguments{
 \item{out.gen}{the values from the general input tab}

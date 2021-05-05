@@ -9,21 +9,14 @@
 #'use
 #'
 #' @param out is the list of variables given by the GUI function
-#' @param a.type is the type of analysis; cell, pixel, or tissue
 #' @return exports multiple variables for use in the main titration codes
 #' @export
 #'
-check.chkbx.input.vars <- function(out, a.type){
+check.chkbx.input.vars <- function(out){
   #
   # set up Vars variable to respond to checkbox input for various types
   #
-  if (a.type == 'pixels') {
-    Vars <- out$Vars_pxp
-  } else if (a.type == 'cells'){
-    Vars <- out$Vars_cell
-  } else if (a.type == 'tissue'){
-    Vars <- out$Vars_tissue
-  }
+  Vars <- out$Vars
   #
   if (!is.null(Vars)){
     Vars <- paste(Vars, collapse = ", ")

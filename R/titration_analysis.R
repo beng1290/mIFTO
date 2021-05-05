@@ -1,84 +1,54 @@
-#########################Pixel-by-Pixel################################
+#########################titration_analysis################################
 
-#'Used by RUN to do Pixel by Pixel Analysis on individual images for
+#'Used by mIFTOapp to do titration_analysis on individual images for
 #'IF titrations;
 #'Created By: Benjamin Green, Charles Roberts;
-#'Last Edited 09/25/2019
+#'Last Edited 02/11/2021
 #'
-#'This function is desgined to do analysis for IF titration series
-#'in Pixel by Pixel data provding output for each IMAGE individually
-#'grouped by Concentration
+#'This function is designed to aid in the analysis of an IF titration series. 
+#' The code collects data (pixel, cell seg, or tissue segmented data) from the
+#' inForm output and, using specified input to the mIFTOapp UI, takes particular
+#' measurements, performs statistical testing and outputs data tables and graphical
+#' pdfs. In this code each image is treated as a separate data point taken for 
+#' each slide/ concentration pair. Data is grouped and graphed accordingly.
 #'
-#'It is meant to be run through the RUN.ByImage function
+#' The code is meant to be run through the mIFTOapp, so particular input to the
+#' 'out' variable is not specified in great detail. Additional information can 
+#' be found in the mIFTO readme file in the github repo at AstropathJHU/mIFTO
 #'
-#'decile data will always be outputed; (or 1/100th depending if
-#''sparse' option is choose in the GUI) if threshold information is
-#' filled out in the GUI; threshold analysis will be run
 #'
 #' @param out is the list of variables given by the GUI function
 #' @param pb is the progress bar created by the GUI
-#' @return exports a variety of graphs displayed in the documentation
-#'  Such as SNRatio graphs, t statisitics and graphs,
-#'  histograms of the log intensity profiles
-#'  for images, positivity measures given thresholds
+#' @return exports a variety of graphs and tables, for more information please 
+#' reference the readme file in the github repo
 #' @export
 #'
-pixelbypixel <- function(out,pb.Object) {
+titation_analysis <- function(out, pb.Object, a.type) {
   ##############################input parameters########################
   #
   pb.count = 0; mIFTO::doupdate.pgbar(
     pb.count, pb.Object, 'Browse For Folder')
   #
-  # check input parameters and allocate some for eaiser indexing
+  # check input parameters and allocate some for easier indexing
   #
-  a.type = 'pixels'
-  outchecked <- mIFTO::check.vars(out, a.type)
+  oc <- mIFTO::check.vars(out, a.type)
   err.val <- outchecked$err.val
   if (err.val != 0) {
     return(err.val)
   }
-  wd <- outchecked$wd
-  Slide_Descript <- outchecked$Slide_ID
-  Antibody <- outchecked$Antibody
-  Opal1 <- outchecked$Opal1
-  Antibody_Opal <- outchecked$Antibody_Opal
-  Concentration <- outchecked$Concentration
-  num.of.tiles <- outchecked$num.of.tiles
-  flowout <- outchecked$flowout
-  ihc.logical <- outchecked$ihc.logical
-  m.folders <- outchecked$m.folders
-  if (ihc.logical){
-    ihc.connected.pixels <- outchecked$ihc.connected.pixels
-    ihc.Thresholds <- outchecked$ihc.Thresholds
-  }
-  Protocol <- outchecked$Protocol
-  paths <- outchecked$paths
-  titration.type.name <- outchecked$titration.type.name
-  connected.pixels <- outchecked$connected.pixels
-  Thresholds <- outchecked$Thresholds
-  decile.logical <- outchecked$decile.logical
-  threshold.logical <- outchecked$threshold.logical
-  step.value <- 10
-  #
-  rm(outchecked, out)
   #
   ##############################create results folders##################
   #
   pb.count = 1; mIFTO::doupdate.pgbar(
     pb.count, pb.Object, 'Generating Folders')
-  v <- mIFTO::create.dir(wd,a.type, flowout)
+  v <- mIFTO::create.dir(oc$wd, a.type, oc$flowout)
   rm(v)
   #
   ###############################Reads in data##########################
   #
   time <- system.time(
-    Tables <- mIFTO::populate.tables(
-      Slide_Descript, Concentration, Antibody_Opal, Thresholds, Opal1,
-      flowout, Protocol, paths, titration.type.name, connected.pixels,
-      decile.logical, threshold.logical,step.value, pb.count, pb.Object
-    )
+    Tables <- mIFTO::populate.tables(a.type, oc, pb.count, pb.Object)
   )
-  #
   err.val <- Tables$err.val
   if (err.val != 0) {
     return(err.val)

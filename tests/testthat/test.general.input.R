@@ -87,11 +87,11 @@ testthat::test_that ("check general input returns errors on empty conditions",{
 testthat::test_that ("evaluate checkbox selection",{
   #
   out <- list()
-  a.type = 'pixels'
+  out$a.type = 'pixels'
   out$Vars_pxp <- c('folders','flowout', 'decile.logical',
                     'ihc','threshold.logical')
   #
-  out2 <- check.chkbx.input.vars(out, a.type)
+  out2 <- check.chkbx.input.vars(out)
   testthat::expect_true(out2$flowout)
   testthat::expect_true(out2$m.folders)
   testthat::expect_true(out2$ihc.logical)
@@ -101,38 +101,14 @@ testthat::test_that ("evaluate checkbox selection",{
   testthat::expect_equal(out2$num.of.tiles, 10)
   testthat::expect_false(out2$phenotyped)
   #
-  a.type = 'cells'
-  out2 <- check.chkbx.input.vars(out, a.type)
+  out$a.type = 'cells'
+  out2 <- check.chkbx.input.vars(out)
   testthat::expect_false(out2$flowout)
   #
   out$Vars_cells <- c('folders','flowout', 'decile.logical',
                     'ihc','threshold.logical', 'phenotyped')
-  out2 <- check.chkbx.input.vars(out, a.type)
+  out2 <- check.chkbx.input.vars(out)
   testthat::expect_true(out2$flowout)
   testthat::expect_true(out2$phenotyped)
   #
 })
-#
-testthat::test_that ("evaluate path definitions",{
-  #
-  out <- list()
-  out$Slide_ID = 'T3,T6,TA,TD,TE'
-  out$Antibody <- 'ERG'
-  out$Opal1 <- '570'
-  out$Concentration <- '800,1600,3200,6400'
-  out$Thresholds <- '8.212,5.260,3.370,2.025'
-  out$protocol.type <- '9color'
-  out$Naming.convention<-TRUE
-  out$titration.type<-"Primary Antibody"
-  a.type = 'pixels'
-  out$Vars_pxp <- c('folders','flowout', 'decile.logical',
-                    'ihc','threshold.logical')
-  out.gen <- check.gen.input.vars(out)
-  out.chkbx <- check.chkbx.input.vars(out, a.type)
-  wd = 'E:/working_code/R/sample data/erg'
-  #
-  out.paths = check.define.input.paths(out.chkbx, out.gen)
-  testthat::expect_match(out.paths$wd, wd)
-  #
-})
-#

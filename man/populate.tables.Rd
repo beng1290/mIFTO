@@ -2,73 +2,39 @@
 % Please edit documentation in R/populate.tables.R
 \name{populate.tables}
 \alias{populate.tables}
-\title{Used to loop through each image, call the generate func and map back to
+\title{Used to loop through each image, call the generate function and map back to
 Tables;
 Created By: Benjamin Green;
 Last Edited 05/29/2020}
 \usage{
-populate.tables(
-  a.type,
-  Slide_Descript,
-  Concentration,
-  Antibody_Opal,
-  Thresholds,
-  Opal1,
-  flowout,
-  Protocol,
-  paths,
-  titration.type.name,
-  decile.logical,
-  step.value,
-  connected.pixels,
-  threshold.logical,
-  compartment,
-  phenotype.logical,
-  pheno.antibody,
-  pb.count,
-  pb.Object
-)
+populate.tables(a.type, oc, pb.count, pb.Object)
 }
 \arguments{
 \item{a.type}{is the type of analysis; cell, pixel, or tissue}
 
-\item{Slide_Descript}{a unique identifier for each slide to be analyzed}
-
-\item{Concentration}{a numeric vector of concentrations used in the titration}
-
-\item{Antibody_Opal}{the paired string for an antibody fluor pair, designated
-as "AB ( NNN)"}
-
-\item{Thresholds}{a list of thresholds used for each concentration and slide}
-
-\item{Opal1}{the opal value of interest}
-
-\item{flowout}{logical for whether or not flow like results will be produced
-(1 for produce, 0 for don't)}
-
-\item{Protocol}{the protocol type (7color or 9color)}
-
-\item{paths}{the data paths, one data path for each concentration}
-
-\item{titration.type.name}{the titration type for a given dilution set
-(Primary or TSA)}
-
-\item{decile.logical}{whether or not to run a decile approach analysis}
-
-\item{step.value}{the number of tiles to divide the data into for decile 
-approach}
-
-\item{connected.pixels}{the number of pixels that a pixel must be connected
-to for positivity measures}
-
-\item{threshold.logical}{whether or not to run a threshold approach analysis}
-
-\item{compartment}{cell compartment for cell analysis}
-
-\item{phenotype.logical}{for cell analysis whether the data was phenotyped 
-or not}
-
-\item{pheno.antibody}{the name of the positive phenotype in cell analysis}
+\item{oc}{a collection of verified and pre organized variables for use, including:
+ - Slide_Descript a unique identifier for each slide to be analyzed
+ - Concentration a numeric vector of concentrations used in the titration
+ - Antibody_Opal the paired string for an antibody fluor pair, designated
+ as "AB ( NNN)"
+ - Thresholds a list of thresholds used for each concentration and slide
+ - Opal1 the opal value of interest
+ - flowout logical for whether or not flow like results will be produced
+(1 for produce, 0 for don't)
+ - Protocol the protocol type (7color or 9color)
+ - paths the data paths, one data path for each concentration
+ - titration.type.name the titration type for a given dilution set
+(Primary or TSA)
+ - decile.logical whether or not to run a decile approach analysis
+ - step.value the number of tiles to divide the data into for decile 
+approach
+ - connected.pixels the number of pixels that a pixel must be connected
+to for positivity measures
+ - threshold.logical whether or not to run a threshold approach analysis
+ - compartment cell compartment for cell analysis
+ - phenotype.logical for cell analysis whether the data was phenotyped 
+or not
+ - pheno.antibody the name of the positive phenotype in cell analysis}
 
 \item{pb.count}{current count for progress bar}
 
@@ -78,8 +44,8 @@ or not}
 
 }
 \description{
-This function is desgined to do analysis for IF titration series
-in Pixel by Pixel data provding output for each IMAGE individually
+This function is designed to do analysis for IF titration series
+in Pixel by Pixel data providing output for each IMAGE individually
 grouped by Concentration
 }
 \details{

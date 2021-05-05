@@ -11,11 +11,11 @@
 #'
 #'
 #' @param out is the list of variables given by the GUI function
-#' @param a.type is the type of analysis; cell, pixel, or tissue
 #' @return exports multiple variables for use in the main titration codes
 #' @export
 #'
-check.vars <- function(out, a.type) {
+check.vars <- function(out, wd = choose.dir(
+  caption = 'Select the folder the data is contained in')) {
   #
   ## General Input -----------------------------
   #
@@ -23,40 +23,41 @@ check.vars <- function(out, a.type) {
   err.val <- out.gen$err.val
   #
   if (err.val != 0) {
-    return(err.val)
+    return(list(err.val = err.val))
   }
   #
   ## Check-Box Input -----------------------------
   #
-  out.chkbx <- mIFTO::check.chkbx.input.vars(out, a.type)
+  out.chkbx <- mIFTO::check.chkbx.input.vars(out)
   #
   ## Define Paths -------------------------------
   #
-  out.paths <- mIFTO::check.define.input.paths(out.chkbx, out.gen)
+  out.paths <- mIFTO::check.define.input.paths(out.chkbx, out.gen, wd)
   #
   err.val <- out.paths$err.val
   if (err.val != 0) {
-    return(err.val)
+    return(list(err.val = err.val))
   }
   #
   ## Analysis specific Input -----------------------------
   #
-  if (grepl(a.type, 'pixels')){
-    out.px <- mIFTO::check.pixel.input.vars(out, out.gen, out.chkbx)
-    err.val <- out.px$err.val
-  } else if (grepl(a.type, 'cells')){
-    out.cell <- check.cell.input.vars(out, out.gen, out.chkbx)
-    err.val <- out.cell$err.val
-  } else if (grepl(a.type, 'tissue')){
-    out.cell <- check.tissue.input.vars(out, out.gen, out.chkbx)
-    err.val <- out.cell$err.val
+  if (grepl(out$a.type, 'pixels')){
+    outnew <- mIFTO::check.pixel.input.vars(out, out.gen, out.chkbx)
+    err.val <- outnew$err.val
+  } else if (grepl(out$a.type, 'cells')){
+    outnew <- check.cell.input.vars(out, out.gen, out.chkbx)
+    err.val <- outnew$err.val
+  } else if (grepl(out$a.type, 'tissue')){
+    outnew<- check.tissue.input.vars(out, out.gen, out.chkbx)
+    err.val <- outnew$err.val
   }
   #
   if (err.val != 0) {
-    return(err.val)
+    return(list(err.val = err.val))
   }
-
-
-
+  #
+  outnew <- c(outnew, out.paths, out.chkbx, out.gen)
+  #
   return(outnew)
+  #
 }

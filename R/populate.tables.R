@@ -1,62 +1,60 @@
 #########################populate.tables#################################
 
-#'Used to loop through each image, call the generate func and map back to
+#'Used to loop through each image, call the generate function and map back to
 #'Tables;
 #'Created By: Benjamin Green;
 #'Last Edited 05/29/2020
 #'
-#'This function is desgined to do analysis for IF titration series
-#'in Pixel by Pixel data provding output for each IMAGE individually
+#'This function is designed to do analysis for IF titration series
+#'in Pixel by Pixel data providing output for each IMAGE individually
 #'grouped by Concentration
 #'
 #'It is meant to be run through the RUN function
 #'
 #' @param a.type is the type of analysis; cell, pixel, or tissue
-#' @param Slide_Descript a unique identifier for each slide to be analyzed
-#' @param Concentration a numeric vector of concentrations used in the titration
-#' @param Antibody_Opal the paired string for an antibody fluor pair, designated
+#' @param oc a collection of verified and pre organized variables for use, including:
+#'  - Slide_Descript a unique identifier for each slide to be analyzed
+#'  - Concentration a numeric vector of concentrations used in the titration
+#'  - Antibody_Opal the paired string for an antibody fluor pair, designated
 #'  as "AB ( NNN)"
-#' @param Thresholds a list of thresholds used for each concentration and slide
-#' @param Opal1 the opal value of interest
-#' @param flowout logical for whether or not flow like results will be produced
+#'  - Thresholds a list of thresholds used for each concentration and slide
+#'  - Opal1 the opal value of interest
+#'  - flowout logical for whether or not flow like results will be produced
 #' (1 for produce, 0 for don't)
-#' @param Protocol the protocol type (7color or 9color)
-#' @param paths the data paths, one data path for each concentration
-#' @param titration.type.name the titration type for a given dilution set
+#'  - Protocol the protocol type (7color or 9color)
+#'  - paths the data paths, one data path for each concentration
+#'  - titration.type.name the titration type for a given dilution set
 #' (Primary or TSA)
-#' @param decile.logical whether or not to run a decile approach analysis
-#' @param step.value the number of tiles to divide the data into for decile 
+#'  - decile.logical whether or not to run a decile approach analysis
+#'  - step.value the number of tiles to divide the data into for decile 
 #' approach
-#' @param connected.pixels the number of pixels that a pixel must be connected
+#'  - connected.pixels the number of pixels that a pixel must be connected
 #' to for positivity measures
-#' @param threshold.logical whether or not to run a threshold approach analysis
-#' @param compartment cell compartment for cell analysis
-#' @param phenotype.logical for cell analysis whether the data was phenotyped 
+#'  - threshold.logical whether or not to run a threshold approach analysis
+#'  - compartment cell compartment for cell analysis
+#'  - phenotype.logical for cell analysis whether the data was phenotyped 
 #' or not
-#' @param pheno.antibody the name of the positive phenotype in cell analysis 
+#'  - pheno.antibody the name of the positive phenotype in cell analysis 
 #' @param pb.count current count for progress bar
 #' @param pb.Object progress bar object
 #' @return
 #' @export
 #'
 populate.tables <- function(
-  a.type, Slide_Descript, Concentration, Antibody_Opal, Thresholds, Opal1,
-  flowout, Protocol, paths, titration.type.name, decile.logical, step.value, 
-  connected.pixels, threshold.logical,compartment, phenotype.logical,
-  pheno.antibody, pb.count, pb.Object){
+  a.type, oc, pb.count, pb.Object){
   #
   #############pre-allocating tables to store results###################
   #
-  pb.step<-round(89/(2*length(Slide_Descript)
-                     *length(Concentration)), digits=2)
+  pb.step<-round(89/(2*length(oc$Slide_Descript)
+                     *length(oc$Concentration)), digits=2)
   #
   table.names.byimage <-c('SN.Ratio','T.Tests','Histograms')
   table.names.wholeslide<-c('SN.Ratio','T.Tests','Histograms','BoxPlots')
   #
   tables.out <- mIFTO::preallocate.tables(
-    a.type, Slide_Descript, Concentration, titration.type.name,
-    table.names.wholeslide, paths, Protocol, decile.logical, threshold.logical,
-    phenotype.logical)
+    a.type, oc$Slide_Descript, oc$Concentration, oc$titration.type.name,
+    table.names.wholeslide, oc$paths, oc$Protocol, oc$decile.logical, oc$threshold.logical,
+    oc$phenotype.logical)
   err.val <- tables.out$err.val
   if (err.val != 0) {
     return(list(err.val = err.val))

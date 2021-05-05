@@ -23,7 +23,7 @@ check.cell.input.vars <- function(out, out.gen, out.chkbx){
     modal_out <- shinyalert::shinyalert(
       title = "ERROR: Must apply thresholds, phenotype, or run quantile analysis.",
       text = paste(
-        "Both analysis types cannot be left blank, please threshold the data or ",
+        "All analysis types cannot be left blank, please threshold, phenotype, or", 
         "run the quantile analysis."
       ),
       type = 'error',
@@ -35,11 +35,11 @@ check.cell.input.vars <- function(out, out.gen, out.chkbx){
   #
   # cell compartment to analyze
   #
-  compartment<-out$compartment
+  compartment<-out$compartment 
   #
   # what was the name used for the positive antibody
   #
-  pheno.antibody <- out$pheno.antibody
+  pheno.antibody <- out$pheno.antibody #error checking
   #
   # ihc check 
   #
@@ -58,7 +58,7 @@ check.cell.input.vars <- function(out, out.gen, out.chkbx){
     #
   }
   #
-  out.thresh <- check.threshold.input.vars(out, out.gen, out.chkbx, ihc.logical)
+  out.thresh <- mIFTO::check.threshold.input.vars(out, out.gen, out.chkbx, ihc.logical)
   #
   out.cell <- list(compartment = compartment, 
                    ihc.logical = ihc.logical,

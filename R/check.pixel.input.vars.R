@@ -50,7 +50,7 @@ check.pixel.input.vars <- function(out, out.gen, out.chkbx){
     #
   }
   #
-  out.thresh <- check.threshold.input.vars(out, out.gen, out.chkbx, ihc.logical)
+  out.thresh <- mIFTO::check.threshold.input.vars(out, out.gen, out.chkbx, ihc.logical)
   #
   out.px <- list(ihc.logical = ihc.logical,
                  out.thresh = out.thresh,

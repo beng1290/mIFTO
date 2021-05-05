@@ -7,7 +7,11 @@ CheckVars
 Created By: Benjamin Green
 Last Edited 09/24/2019}
 \usage{
-check.vars(out, a.type)
+check.vars(
+  out,
+  a.type,
+  wd = choose.dir(caption = "Select the folder the data is contained in")
+)
 }
 \arguments{
 \item{out}{is the list of variables given by the GUI function}

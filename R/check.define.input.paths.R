@@ -15,11 +15,10 @@
 #' @return exports the working directory and the folders + check for common errors
 #' @export
 #'
-check.define.input.paths <- function(out.chkbx, out.gen,  wd = choose.dir(caption = 'Select the folder the data is contained in')) {
+check.define.input.paths <- function(out.chkbx, out.gen, wd ) {
   #
   # get the working directory
   #
-  #wd <- choose.dir(caption = 'Select the folder the data is contained in')
   if(is.na(wd)) {
     modal_out <- shinyalert::shinyalert(
       title = "Directory not valid.",
@@ -101,14 +100,14 @@ check.define.input.paths <- function(out.chkbx, out.gen,  wd = choose.dir(captio
           wd, pattern = str, ignore.case = T)
       }
       #
-      # check that files exist for each AB
+      # check that files exist for each slide
       #
       if(length(cImage.IDs) == 0 ){
         modal_out <- shinyalert::shinyalert(
           title =  paste('Search failed for', x, out.gen$titration.type.name,
                          'IHC images'),
           text = paste0(
-            'Please check slide names and that component data tiffs for ',
+            'Please check slide names and that correct data for ',
             x, ' IHC exist. For data separated in folders by dilution, put IHC ',
             'data in an "IHC" or "', out.gen$Antibody, '_IHC" folder'),
           type = 'error',

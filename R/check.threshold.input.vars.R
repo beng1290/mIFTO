@@ -29,9 +29,15 @@ check.threshold.input.vars <- function(out, out.gen, out.chkbx, ihc.logical){
         1:length(out.gen$Slide_ID), function(x)out$Thresholds
       )
       #
-      connected.pixels <- lapply(
-        1:length(out.gen$Slide_ID), function(x)out$connected.pixels
-      )
+      if (grepl('cells', out$a.type)) {
+        connected.pixels <- lapply(
+          1:length(out.gen$Slide_ID), function(x)paste0(
+            rep('0',length(out.gen$Concentration)),',', collapse = '')
+      } else {
+        connected.pixels <- lapply(
+          1:length(out.gen$Slide_ID), function(x)out$connected.pixels
+        )
+      }
     } else {
       #
       # if thresholds and connected.pixel values are not the same across cases
@@ -41,9 +47,15 @@ check.threshold.input.vars <- function(out, out.gen, out.chkbx, ihc.logical){
         1:length(out.gen$Slide_ID), function(x)out[[paste0("Thresholds",x)]]
       )
       #
-      connected.pixels <- lapply(
-        1:length(out.gen$Slide_ID), function(x)out[[paste0("connected.pixels",x)]]
-      )
+      if (grepl('cells', out$a.type)) {
+        connected.pixels <- lapply(
+          1:length(out.gen$Slide_ID), function(x)paste0(
+            rep('0',length(out.gen$Concentration)),',', collapse = '')
+      } else {
+        connected.pixels <- lapply(
+          1:length(out.gen$Slide_ID), function(x)out[[paste0("connected.pixels",x)]]
+        )
+      }
       #
     }
     #
@@ -52,11 +64,13 @@ check.threshold.input.vars <- function(out, out.gen, out.chkbx, ihc.logical){
     # if no thresholds are included, still create the variables but fill with 0s
     #
     Thresholds = lapply(
-      1:length(out.gen$Slide_ID), function(x)rep(0,length(out.gen$Concentration))
+      1:length(out.gen$Slide_ID), function(x)paste0(
+        rep('0',length(out.gen$Concentration)),',', collapse = '')
     )
     #
     connected.pixels <- lapply(
-      1:length(out.gen$Slide_ID), function(x)rep(0,length(out.gen$Concentration))
+      1:length(out.gen$Slide_ID), function(x)paste0(
+        rep('0',length(out.gen$Concentration)),',', collapse = '')
     )
   }
   #
@@ -260,10 +274,9 @@ out.eb.check <- mIFTO::check.EBImage.install(connected.pixels)
 err.val <- out.eb.check$err.val
 #
 if (err.val != 0) {
-  return(err.val)
+  return(list(err.val = err.val))
 }
 out.px <- list(Thresholds = Thresholds, ihc.Thresholds = ihc.Thresholds,
                connected.pixels = connected.pixels, 
-               ihc.connected.pixels = ihc.connected.pixels, 
-               threshold.logical = threshold.logical, err.val = 0)
+               ihc.connected.pixels = ihc.connected.pixels, err.val = 0)
 }
